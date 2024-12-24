@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Text, View, Image } from "react-native";
+import { Text, View, Pressable } from "react-native";
 import { stylesControlPresupuesto } from "./stylesControlPresupuesto";
 import { formatearCantidad } from "../../helpers";
 
-export default function ControlPresupuesto({presupuesto, gastos}) {
+export default function ControlPresupuesto({presupuesto, gastos, resetearApp}) {
 
     const [ disponible, setDisponible] = useState(0)
     const [ gastado, setGastado] = useState(0)
@@ -36,6 +36,12 @@ export default function ControlPresupuesto({presupuesto, gastos}) {
                 <Text style={stylesControlPresupuesto.valor}>
                     <Text style={stylesControlPresupuesto.label}>Gastado: </Text>{formatearCantidad(gastado)}
                 </Text>
+
+                <Pressable style={stylesControlPresupuesto.btn}
+                    onPress={resetearApp}
+                >
+                    <Text style={stylesControlPresupuesto.textBtn}>Reiniciar App</Text>
+                </Pressable>
             </View>
         </View>
     )

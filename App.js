@@ -151,6 +151,28 @@ export default function App() {
     ])
   }
 
+  const resetearApp = () => {
+    Alert.alert('¿Desea reiniciar la aplicación?', 'Esto eliminará todos los datos guardados.', [
+      {
+        text: 'NO'
+      },
+      {
+        text: 'Si, eliminar.',
+        onPress: async () => {
+          try{
+            await AsyncStorage.clear()
+            setIsValidPresupuesto(false)
+            setPresupuesto(0)
+            setGastos([])
+          } catch (error) {
+            console.log(error)
+          }
+
+        }
+      }
+    ])
+  }
+
   return (
     <View style={styles.container}>
       <ScrollView>
@@ -161,6 +183,7 @@ export default function App() {
             <ControlPresupuesto
               presupuesto={presupuesto}
               gastos={gastos}
+              resetearApp={resetearApp}
             />
           
           ) : 

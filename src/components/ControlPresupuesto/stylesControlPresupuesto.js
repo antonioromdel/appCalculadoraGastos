@@ -8,9 +8,19 @@ export const stylesControlPresupuesto = StyleSheet.create({
     centrarGrafica: {
         alignItems: 'center'
     },
-    imagen: {
-        width: 250,
-        height: 250
+    btn: {
+     backgroundColor: '#db2777',
+     padding: 10,
+     marginTop: 15,
+     borderRadius: 5
+        
+    },
+    textBtn: {
+        textAlign:'center',
+        color: '#fff',
+        fontWeight: 'bold',
+        textTransform: 'uppercase'
+
     },
     contenedorTexto: {
         marginTop: 30
