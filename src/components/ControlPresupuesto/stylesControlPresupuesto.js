@@ -8,19 +8,15 @@ export const stylesControlPresupuesto = StyleSheet.create({
     centrarGrafica: {
         alignItems: 'center'
     },
-    btn: {
-     backgroundColor: '#db2777',
-     padding: 10,
-     marginTop: 15,
-     borderRadius: 5
-        
-    },
-    textBtn: {
+    title: {
         textAlign:'center',
-        color: '#fff',
+        fontSize: 30,
         fontWeight: 'bold',
-        textTransform: 'uppercase'
-
+        color:'blue',
+        marginBottom: 15
+    },
+    btnVolver: {
+        backgroundColor:'blue'
     },
     contenedorTexto: {
         marginTop: 30
@@ -33,6 +29,20 @@ export const stylesControlPresupuesto = StyleSheet.create({
     label: {
         fontWeight: '700',
         color: '#3b82f6'
+    },
+    textBtn: {
+        textAlign:'center',
+        color: '#fff',
+        fontWeight: 'bold',
+        textTransform: 'uppercase'
+
+    },
+    btn: {
+     backgroundColor: '#db2777',
+     padding: 10,
+     marginTop: 15,
+     borderRadius: 5
+        
     }
 
 })

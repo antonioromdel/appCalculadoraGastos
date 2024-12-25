@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Alert, Pressable, Image, Modal, ScrollView } from 'react-native';
+import { StyleSheet, View, Alert, Pressable, Image, Modal, ScrollView } from 'react-native';
 import Header from './src/components/Header/Header';
 import NuevoPresupuesto from './src/components/NuevoPresupuesto/NuevoPresupuesto';
 import { useEffect, useState } from 'react';
@@ -8,109 +8,78 @@ import { generarId } from './src/helpers';
 import ListadoGastos from './src/components/ListadoGastos/ListadoGastos';
 import Filtro from './src/components/Filtro/Filtro';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { almacenarAS, guardarEventosStorage, guardarGastosStorage, obtenerEventosStorage, obtenerGastosStorage, obtenerPresupuestoStorage } from './src/data/data';
+import ListadoEventos from './src/components/ListadoEventos/ListadoEventos';
 
 export default function App() {
 
   const [isValidPresupuesto, setIsValidPresupuesto] = useState(false)
   const [presupuesto, setPresupuesto] = useState(0)
+  const [descripcionPresupuesto, setDescripcionPresupuesto] = useState('')
+  const [idPresupuesto, setIdPresupuesto] = useState('')
+  const [eventos, setEventos] = useState([])
   const [ gastos, setGastos] = useState([])
   const [ modal, setModal] = useState(false)
-  const [gasto, setGasto] = useState({})
+  const [ gasto, setGasto ] = useState({})
   const [ filtro, setFiltro ] = useState('')
   const [ gastosFiltros, setGastosFiltros ] = useState([])
 
   useEffect(() => {
-
-    const obtenerPresupuestoStorage = async () => {
-
-      try{
-
-        const presupuestoStorage = await AsyncStorage.getItem('planificador_presupuesto') ?? 0
-        
-        if(presupuestoStorage > 0) {
-          setPresupuesto(presupuestoStorage)
-          setIsValidPresupuesto(true)
-        }
-
-      } catch (error) {
-        console.log(error)
-      }
-
-    }
-
-    obtenerPresupuestoStorage()
-
+    obtenerPresupuestoStorage(setPresupuesto, setIsValidPresupuesto)
+  
   }, [])
 
   useEffect(() => {
-    const almacenarAS = async () => {
-      
-      if(isValidPresupuesto){
-        const guardarPresuestoStorage = async () => {
-
-          try{
-            await AsyncStorage.setItem('planificador_presupuesto', presupuesto)
-
-          } catch (error){
-            console.log(error)
-          }
-
-        }
-        guardarPresuestoStorage()
-      }
-    }
-
-    almacenarAS()
+    almacenarAS(presupuesto)
 
   }, [isValidPresupuesto])
 
   useEffect(() => {
-
-    const obtenerGastosStorage = async () => {
-
-      try{
-        const gastosStorage = await AsyncStorage.getItem('planificador_gastos') ?? []
-        
-        setGastos( gastosStorage ? JSON.parse(gastosStorage) : [])
-        
-      } catch (error) {
-        console.log(error)
-      }
-    }
-
-    obtenerGastosStorage()
+    obtenerGastosStorage(setGastos)
 
   }, [])
 
-
   useEffect(() => {
-
-    const guardarGastosStorage = async () => {
-
-      try{
-
-        await AsyncStorage.setItem('planificador_gastos', JSON.stringify(gastos))
-
-      } catch (error) {
-        console.log(error)
-      }
-
-    }
-
-    guardarGastosStorage()
+    guardarGastosStorage(gastos)
 
   }, [gastos])
 
+  useEffect(() => {
+    guardarEventosStorage(eventos)
 
-  const handleNuevoPresupuesto = (presupuesto) => {
-    if(Number(presupuesto) > 0) {
-      setIsValidPresupuesto(true)
-    } else {
+  }, [eventos])
+
+  useEffect(() => {
+    obtenerEventosStorage(setEventos)
+
+  }, [])
+
+  const handleEvento = (evento) => {
+    setIsValidPresupuesto(true)
+    setPresupuesto(evento.presupuesto)
+    setDescripcionPresupuesto(evento.descripcionPresupuesto)
+    setIdPresupuesto(evento.id)
+  }
+
+
+  const handleNuevoPresupuesto = (evento) => {
+    if(Number(evento.presupuesto) <= 0) {
       Alert.alert('Error', 'El presupuesto no puede ser 0 o menor', [
         {
           text: 'Ok'
         }
       ])
+    } else if(evento.descripcionPresupuesto.trim() === '') {
+      Alert.alert('Error', 'La descripción no puede estar vacía.', [
+        {
+          text: 'OK'
+        }
+      ])
+    } else {
+      setIsValidPresupuesto(true)
+      evento.id = generarId()
+      setIdPresupuesto(evento.id)
+      setEventos([...eventos, evento])
     }
   }
 
@@ -127,6 +96,7 @@ export default function App() {
     } else {
       gasto.id = generarId()
       gasto.fecha = Date.now()
+      gasto.idPresupuesto = idPresupuesto
       setGastos([...gastos, gasto])
 
     }
@@ -164,6 +134,8 @@ export default function App() {
             setIsValidPresupuesto(false)
             setPresupuesto(0)
             setGastos([])
+            setDescripcionPresupuesto('')
+            setEventos([])
           } catch (error) {
             console.log(error)
           }
@@ -171,6 +143,31 @@ export default function App() {
         }
       }
     ])
+  }
+
+  const volverPresupuesto = () => {
+    setIsValidPresupuesto(false)
+    setPresupuesto(0)
+    setDescripcionPresupuesto('')
+    setFiltro('')
+  }
+
+  const deleteEvento = (id) => {
+    Alert.alert('¿Desea eliminar este presupuesto?', 'Una vez borrado no se podrá recuperar.', [
+      {
+        text: 'No'
+      },
+      {
+        text: 'Si, eliminar.',
+        onPress: () => {
+          const newEventos = eventos.filter(evento => evento.id !== id)
+          const newGastos = gastos.filter(gasto => gasto.idPresupuesto !== id)
+          setGastos(newGastos)
+          setEventos(newEventos)
+        }
+      }
+    ])
+
   }
 
   return (
@@ -184,16 +181,30 @@ export default function App() {
               presupuesto={presupuesto}
               gastos={gastos}
               resetearApp={resetearApp}
+              volverPresupuesto={volverPresupuesto}
+              descripcionPresupuesto={descripcionPresupuesto}
+              idPresupuesto={idPresupuesto}
             />
           
           ) : 
           
           (
-            <NuevoPresupuesto 
-              handleNuevoPresupuesto={handleNuevoPresupuesto}
-              presupuesto={presupuesto}
-              setPresupuesto={setPresupuesto}
-            />
+            <>
+              <NuevoPresupuesto 
+                handleNuevoPresupuesto={handleNuevoPresupuesto}
+                presupuesto={presupuesto}
+                setPresupuesto={setPresupuesto}
+                descripcionPresupuesto={descripcionPresupuesto}
+                setDescripcionPresupuesto={setDescripcionPresupuesto}
+                resetearApp={resetearApp}
+              />
+
+              <ListadoEventos 
+                eventos={eventos}
+                handleEvento={handleEvento}
+                deleteEvento={deleteEvento}
+              />
+            </>
           )
         }
       </View>
@@ -213,6 +224,7 @@ export default function App() {
               setGasto={setGasto}
               filtro={filtro}
               gastosFiltros={gastosFiltros}
+              idPresupuesto={idPresupuesto}
             />
           </>
         )

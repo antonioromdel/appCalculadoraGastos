@@ -15,7 +15,8 @@ export const stylesNuevoPresupuesto = StyleSheet.create({
         textAlign: 'center',
         fontSize: 24,
         color: '#3b82f6',
-        marginBottom: 25
+        marginBottom: 25,
+        marginTop: 20
     },
     boton: {
         marginTop: 30,
@@ -29,5 +30,18 @@ export const stylesNuevoPresupuesto = StyleSheet.create({
         textAlign: 'center',
         textTransform: 'uppercase',
         fontWeight: 'bold'
+    },
+    textBtn: {
+        textAlign:'center',
+        color: '#fff',
+        fontWeight: 'bold',
+        textTransform: 'uppercase'
+
+    },
+    btn: {
+     backgroundColor: '#db2777',
+     padding: 10,
+     borderRadius: 5
+        
     }
 })
